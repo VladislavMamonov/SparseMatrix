@@ -8,6 +8,7 @@ using namespace std;
 
 struct coo_matrix
 {
+  int row, col, arr_size = 0;
   list<int> rows;
   list<int> cols;
   list<double> value;
@@ -40,13 +41,18 @@ struct dia_matrix
   int *offsets;
 };
 
-coo_matrix init_coo(coo_matrix coo_matrix, int row, int col);
+coo_matrix init_coo(coo_matrix coo_matrix);
 csr_matrix init_csr(csr_matrix csr_matrix);
 csc_matrix init_csc(csc_matrix csc_matrix);
 dia_matrix init_dia(dia_matrix dia_matrix);
 
+csr_matrix simpleM_to_csr(csr_matrix csr_matrix);
+dia_matrix simpleM_to_dia(dia_matrix dia_matrix);
+csc_matrix simpleM_to_csc(csc_matrix csc_matrix);
+
 csr_matrix coo_to_csr(coo_matrix coo_matrix, csr_matrix csr_matrix);
 coo_matrix csr_to_coo(csr_matrix csr_matrix, coo_matrix coo_matrix);
+csc_matrix csr_to_csc(csr_matrix csr_matrix, csc_matrix csc_matrix);
 csr_matrix csc_to_csr(csc_matrix csc_matrix, csr_matrix csr_matrix);
 dia_matrix csr_to_dia(csr_matrix csr_matrix, dia_matrix dia_matrix);
 csr_matrix dia_to_csr(dia_matrix dia_matrix, csr_matrix csr_matrix);
@@ -56,6 +62,6 @@ void print_csr_matrix(csr_matrix csr_matrix);
 void print_csc_matrix(csc_matrix csc_matrix);
 void print_dia_matrix(dia_matrix dia_matrix);
 
-int coo_sparse_check(coo_matrix coo_matrix, int row, int col);
+int coo_sparse_check(coo_matrix coo_matrix);
 int csr_sparse_check(csr_matrix csr_matrix);
 int dia_sparse_check(dia_matrix dia_matrix);

@@ -95,6 +95,37 @@ coo_matrix csr_to_coo(csr_matrix csr_matrix, coo_matrix coo_matrix)
 }
 
 
+csc_matrix csr_to_csc(csr_matrix csr_matrix, csc_matrix csc_matrix)
+{
+  csc_matrix.arr_size = csr_matrix.arr_size;
+  csc_matrix.row = csr_matrix.row;
+  csc_matrix.col = csr_matrix.col;
+
+  csc_matrix.value = new double[csc_matrix.arr_size];
+  csc_matrix.row_index = new int[csc_matrix.arr_size];
+  csc_matrix.col_indexing = new int[csc_matrix.col + 1];
+  csc_matrix.csc_matrix = new double* [csc_matrix.row];
+
+  for (int i = 0; i < csc_matrix.row; i++)
+    csc_matrix.csc_matrix[i] = new double[csc_matrix.col];
+
+  int index = 0;
+
+  for (int i = 1; i < csr_matrix.row + 1; i++) {
+    int items_per_row = csr_matrix.row_indexing[i] - csr_matrix.row_indexing[i - 1];
+    for (int k = 0, j = 0; k < items_per_row; k++) {
+      j = csr_matrix.col_index[index];
+      csc_matrix.csc_matrix[i - 1][j] = csr_matrix.value[index];
+      index++;
+    }
+  }
+
+  csc_matrix = simpleM_to_csc(csc_matrix);
+
+  return csc_matrix;
+}
+
+
 csr_matrix csc_to_csr(csc_matrix csc_matrix, csr_matrix csr_matrix)
 {
   csr_matrix.arr_size = csc_matrix.arr_size;
@@ -104,40 +135,23 @@ csr_matrix csc_to_csr(csc_matrix csc_matrix, csr_matrix csr_matrix)
   csr_matrix.value = new double[csr_matrix.arr_size];
   csr_matrix.col_index = new int[csr_matrix.arr_size];
   csr_matrix.row_indexing = new int[csr_matrix.row + 1];
+  csr_matrix.csr_matrix = new double* [csr_matrix.row];
+
+  for (int i = 0; i < csr_matrix.row; i++)
+    csr_matrix.csr_matrix[i] = new double[csr_matrix.col];
 
   int index = 0;
-  int col_numbers_qt[csr_matrix.arr_size];
 
-  for (int i = 0; i < csr_matrix.arr_size; i++) {
-    for (int j = 0; j < csr_matrix.arr_size; j++) {
-      if (csc_matrix.row_index[j] == i) {
-        csr_matrix.value[index] = csc_matrix.value[j];
-        index++;
-      }
+  for (int j = 1; j < csc_matrix.col + 1; j++) {
+    int items_per_col = csc_matrix.col_indexing[j] - csc_matrix.col_indexing[j - 1];
+    for (int k = 0, i = 0; k < items_per_col; k++) {
+      i = csc_matrix.row_index[index];
+      csr_matrix.csr_matrix[i][j - 1] = csc_matrix.value[index];
+      index++;
     }
   }
 
-  index = 0;
-  for (int i = 1, j = 0; i < csc_matrix.row + 1; i++, j++) {
-    col_numbers_qt[j] = csc_matrix.col_indexing[i] - csc_matrix.col_indexing[i - 1];
-  }
-
-  bool fill_col = false;
-
-  for (int i = 0; i < csr_matrix.row; i++) {
-    for (int j = 0, k = 0; j < csr_matrix.col; j++, k++) {
-      if (col_numbers_qt[j] != 0) {
-        fill_col = false;
-        for (int c = 0; c < csc_matrix.arr_size; c++) {
-          if (csc_matrix.row_index[c] == i && fill_col == false) {
-            csr_matrix.col_index[index] = j;
-            index++;
-            fill_col = true;
-          }
-        }
-      }
-    }
-  }
+  csr_matrix = simpleM_to_csr(csr_matrix);
 
   return csr_matrix;
 }
@@ -293,7 +307,7 @@ csr_matrix dia_to_csr(dia_matrix dia_matrix, csr_matrix csr_matrix)
     }
   }
 
-  csr_matrix = init_csr(csr_matrix);
+  csr_matrix = simpleM_to_csr(csr_matrix);
 
   return csr_matrix;
 }

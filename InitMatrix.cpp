@@ -87,20 +87,20 @@ void print_dia_matrix(dia_matrix dia_matrix)
 }
 
 
-int coo_sparse_check(coo_matrix coo_matrix, int row, int col)
+int coo_sparse_check(coo_matrix coo_matrix)
 {
   auto val = coo_matrix.value.begin();
   int zero_counter = 0;
 
   for (auto i = coo_matrix.rows.begin(); i != coo_matrix.rows.end(); i++) {
     int c = 0;
-    for (auto j = coo_matrix.cols.begin(); c < col; j++, c++) {
+    for (auto j = coo_matrix.cols.begin(); c < coo_matrix.col; j++, c++) {
       if (*val == 0) zero_counter++;
       val++;
     }
   }
 
-  if (zero_counter < (row * col / 2))
+  if (zero_counter < (coo_matrix.row * coo_matrix.col / 2))
     return 1;
 
   return 0;
@@ -152,24 +152,35 @@ int dia_sparse_check(dia_matrix dia_matrix)
 }
 
 
-coo_matrix init_coo(coo_matrix coo_matrix, int row, int col)
+coo_matrix init_coo(coo_matrix coo_matrix)
 {
   double val;
 
-  for (int i = 0; i < row; i++) {
-    for (int j = 0; j < col; j++) {
-      cout << "value[" << i << "," << j << "] = ";
-      cin >> val;
-      if (val != 0) {
-        coo_matrix.cols.push_back(j);
-        coo_matrix.value.push_back(val);
-        coo_matrix.rows.push_back(i);
-      }
-    }
+  cout << "matrix rows: ";
+  cin >> coo_matrix.row;
+  cout << "matrix cols: ";
+  cin >> coo_matrix.col;
+
+  cout << "number of nonzero elements: ";
+  cin >> coo_matrix.arr_size;
+
+  for (int i = 0; i < coo_matrix.arr_size; i++) {
+    cout << "row index[" << i << "]: ";
+    cin >> val;
+    coo_matrix.rows.push_back(val);
   }
 
-  if (coo_sparse_check(coo_matrix, row, col) == 1)  //Проверка матрицы на разреженность
-    cout << "matrix is ​​not sparse" << endl;
+  for (int i = 0; i < coo_matrix.arr_size; i++) {
+    cout << "col index[" << i << "]: ";
+    cin >> val;
+    coo_matrix.cols.push_back(val);
+  }
+
+  for (int i = 0; i < coo_matrix.arr_size; i++) {
+    cout << "values[" << i << "]: ";
+    cin >> val;
+    coo_matrix.value.push_back(val);
+  }
 
   return coo_matrix;
 }
@@ -177,38 +188,104 @@ coo_matrix init_coo(coo_matrix coo_matrix, int row, int col)
 
 csr_matrix init_csr(csr_matrix csr_matrix)
 {
-  // double val;
-  //
-  // cout << "matrix rows: ";
-  // cin >> csr_matrix.row;
-  // cout << "matrix cols: ";
-  // cin >> csr_matrix.col;
+  cout << "matrix rows: ";
+  cin >> csr_matrix.row;
+  cout << "matrix cols: ";
+  cin >> csr_matrix.col;
 
-  // csr_matrix.csr_matrix = new double* [csr_matrix.row];
-  //
-  // for (int i = 0; i < csr_matrix.row; i++)
-  //   csr_matrix.csr_matrix[i] = new double[csr_matrix.col];   //Выделение памяти под матрицу
-  //
-  // for (int i = 0; i < csr_matrix.row; i++) {            //Инициализация матрицы
-  // 	for (int j = 0; j < csr_matrix.col; j++) {
-  //     cout << "value[" << i << "," << j << "] = ";
-  //     cin >> val;
-  // 		csr_matrix.csr_matrix[i][j] = val;
-  // 	}
-  // }
+  cout << "number of nonzero elements: ";
+  cin >> csr_matrix.arr_size;
 
+  csr_matrix.value = new double[csr_matrix.arr_size];
+  csr_matrix.col_index = new int[csr_matrix.arr_size];
+  csr_matrix.row_indexing = new int[csr_matrix.row + 1];
+  csr_matrix.row_indexing[0] = 0;
+
+  for (int i = 0; i < csr_matrix.arr_size; i++) {
+    cout << "values[" << i << "]: ";
+    cin >> csr_matrix.value[i];
+  }
+
+  for (int i = 0; i < csr_matrix.arr_size; i++) {
+    cout << "cols indexes[" << i << "]: ";
+    cin >> csr_matrix.col_index[i];
+  }
+
+  for (int i = 1; i < csr_matrix.row + 1; i++) {
+    cout << "rows indexing[" << i << "]: ";
+    cin >> csr_matrix.row_indexing[i];
+  }
+
+  return csr_matrix;
+}
+
+
+csc_matrix init_csc(csc_matrix csc_matrix)
+{
+  cout << "matrix rows: ";
+  cin >> csc_matrix.row;
+  cout << "matrix cols: ";
+  cin >> csc_matrix.col;
+
+  cout << "number of nonzero elements: ";
+  cin >> csc_matrix.arr_size;
+
+  csc_matrix.value = new double[csc_matrix.arr_size];
+  csc_matrix.row_index = new int[csc_matrix.arr_size];
+  csc_matrix.col_indexing = new int[csc_matrix.col + 1];
+  csc_matrix.col_indexing[0] = 0;
+
+  for (int i = 0; i < csc_matrix.arr_size; i++) {
+    cout << "values[" << i << "]: ";
+    cin >> csc_matrix.value[i];
+  }
+
+  for (int i = 0; i < csc_matrix.arr_size; i++) {
+    cout << "rows indexes[" << i << "]: ";
+    cin >> csc_matrix.row_index[i];
+  }
+
+  for (int i = 1; i < csc_matrix.col + 1; i++) {
+    cout << "cols indexing[" << i << "]: ";
+    cin >> csc_matrix.col_indexing[i];
+  }
+
+  return csc_matrix;
+}
+
+
+dia_matrix init_dia(dia_matrix dia_matrix)
+{
+  cout << "matrix rows: ";
+  cin >> dia_matrix.row;
+  cout << "matrix cols: ";
+  cin >> dia_matrix.col;
+
+  cout << "number of offsets: ";
+  cin >> dia_matrix.arr_size;
+
+  dia_matrix.value = new double[dia_matrix.arr_size * dia_matrix.col];
+  dia_matrix.offsets = new int[dia_matrix.arr_size];
+
+  for (int i = 0; i < dia_matrix.arr_size; i++) {
+    cout << "offsets[" << i << "]: ";
+    cin >> dia_matrix.offsets[i];
+  }
+
+  for (int i = 0; i < dia_matrix.arr_size * dia_matrix.col; i++) {
+    cout << "values[" << i << "]: ";
+    cin >> dia_matrix.value[i];
+  }
+
+  return dia_matrix;
+}
+
+
+csr_matrix simpleM_to_csr(csr_matrix csr_matrix)
+{
   if (csr_sparse_check(csr_matrix) == 1)
     cout << "matrix is ​​not sparse" << endl;   //Проверка на разреженность
 
-  // for (int i = 0; i < csr_matrix.row; i++) {    //Нахождение размера массивов csr
-  //   for (int j = 0; j < csr_matrix.col; j++) {
-  //     if (csr_matrix.csr_matrix[i][j] != 0) csr_matrix.arr_size++;
-  //   }
-  // }
-
-
-  // csr_matrix.value = new double[csr_matrix.arr_size];
-  // csr_matrix.col_index = new int[csr_matrix.arr_size];
   csr_matrix.row_indexing = new int[csr_matrix.row + 1];
   csr_matrix.row_indexing[0] = 0;
 
@@ -227,40 +304,11 @@ csr_matrix init_csr(csr_matrix csr_matrix)
 }
 
 
-csc_matrix init_csc(csc_matrix csc_matrix)
+csc_matrix simpleM_to_csc(csc_matrix csc_matrix)
 {
-  double val;
-
-  cout << "matrix rows: ";
-  cin >> csc_matrix.row;
-  cout << "matrix cols: ";
-  cin >> csc_matrix.col;
-
-  csc_matrix.csc_matrix = new double* [csc_matrix.row];
-
-  for (int i = 0; i < csc_matrix.row; i++)
-    csc_matrix.csc_matrix[i] = new double[csc_matrix.col];   //Выделение памяти под матрицу
-
-  for (int i = 0; i < csc_matrix.row; i++) {            //Инициализация матрицы
-    for (int j = 0; j < csc_matrix.col; j++) {
-      cout << "value[" << i << "," << j << "] = ";
-      cin >> val;
-      csc_matrix.csc_matrix[i][j] = val;
-    }
-  }
-
   if (csc_sparse_check(csc_matrix) == 1)
     cout << "matrix is ​​not sparse" << endl;   //Проверка на разреженность
 
-  for (int i = 0; i < csc_matrix.row; i++) {    //Нахождение размера массивов csc
-    for (int j = 0; j < csc_matrix.col; j++) {
-      if (csc_matrix.csc_matrix[i][j] != 0) csc_matrix.arr_size++;
-    }
-  }
-
-
-  csc_matrix.value = new double[csc_matrix.arr_size];
-  csc_matrix.row_index = new int[csc_matrix.arr_size];
   csc_matrix.col_indexing = new int[csc_matrix.col + 1];
   csc_matrix.col_indexing[0] = 0;
 
@@ -279,42 +327,13 @@ csc_matrix init_csc(csc_matrix csc_matrix)
 }
 
 
-dia_matrix init_dia(dia_matrix dia_matrix)
+dia_matrix simpleM_to_dia(dia_matrix dia_matrix)
 {
-  double val;
   int offset = 0;
   int value_counter = 0;
 
-  cout << "matrix rows: ";
-  cin >> dia_matrix.row;
-  cout << "matrix cols: ";
-  cin >> dia_matrix.col;
-
-  dia_matrix.dia_matrix = new double* [dia_matrix.row];
-
-  for (int i = 0; i < dia_matrix.row; i++)
-    dia_matrix.dia_matrix[i] = new double[dia_matrix.col];   //Выделение памяти под матрицу
-
-  for (int i = 0; i < dia_matrix.row; i++) {            //Инициализация матрицы
-    for (int j = 0; j < dia_matrix.col; j++) {
-      cout << "value[" << i << "," << j << "] = ";
-      cin >> val;
-      dia_matrix.dia_matrix[i][j] = val;
-    }
-  }
-
   if (dia_sparse_check(dia_matrix) == 1)
     cout << "matrix is ​​not sparse" << endl;   //Проверка на разреженность
-
-  for (int i = 0; i < dia_matrix.col; i++)
-    if (dia_matrix.dia_matrix[0][i] != 0) dia_matrix.arr_size++;   //Нахождение размера массивов dia
-
-  for (int i = 1; i < dia_matrix.row; i++)
-    if (dia_matrix.dia_matrix[i][0] != 0) dia_matrix.arr_size++;
-
-
-  dia_matrix.value = new double[dia_matrix.arr_size * dia_matrix.col];
-  dia_matrix.offsets = new int[dia_matrix.arr_size];
 
   for (int i = 0; i < dia_matrix.col; i++)
   {
