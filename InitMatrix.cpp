@@ -3,7 +3,6 @@
 
 void print_coo_matrix(coo_matrix coo_matrix)
 {
-  cout << endl << endl;
   cout << "List of rows: { ";
   for (auto i = coo_matrix.rows.begin(); i != coo_matrix.rows.end(); i++) {
     cout << *i << " ";
@@ -26,7 +25,6 @@ void print_coo_matrix(coo_matrix coo_matrix)
 
 void print_csr_matrix(csr_matrix csr_matrix)
 {
-  cout << endl << endl;
   cout << "Array of values: { ";
   for (int i = 0; i < csr_matrix.arr_size; i++) {
     cout << csr_matrix.value[i] << " ";
@@ -49,7 +47,6 @@ void print_csr_matrix(csr_matrix csr_matrix)
 
 void print_csc_matrix(csc_matrix csc_matrix)
 {
-  cout << endl << endl;
   cout << "Array of values: { ";
   for (int i = 0; i < csc_matrix.arr_size; i++) {
     cout << csc_matrix.value[i] << " ";
@@ -72,7 +69,6 @@ void print_csc_matrix(csc_matrix csc_matrix)
 
 void print_dia_matrix(dia_matrix dia_matrix)
 {
-  cout << endl << endl;
   cout << "Array of offsets: { ";
   for (int i = 0; i < dia_matrix.arr_size; i++) {
     cout << dia_matrix.offsets[i] << " ";
@@ -160,9 +156,11 @@ coo_matrix init_coo(coo_matrix coo_matrix)
   cin >> coo_matrix.row;
   cout << "matrix cols: ";
   cin >> coo_matrix.col;
+  cout << endl;
 
   cout << "number of nonzero elements: ";
   cin >> coo_matrix.arr_size;
+  cout << endl;
 
   for (int i = 0; i < coo_matrix.arr_size; i++) {
     cout << "row index[" << i << "]: ";
@@ -170,17 +168,23 @@ coo_matrix init_coo(coo_matrix coo_matrix)
     coo_matrix.rows.push_back(val);
   }
 
+  cout << endl;
+
   for (int i = 0; i < coo_matrix.arr_size; i++) {
     cout << "col index[" << i << "]: ";
     cin >> val;
     coo_matrix.cols.push_back(val);
   }
 
+  cout << endl;
+
   for (int i = 0; i < coo_matrix.arr_size; i++) {
     cout << "values[" << i << "]: ";
     cin >> val;
     coo_matrix.value.push_back(val);
   }
+
+  cout << endl;
 
   return coo_matrix;
 }
@@ -192,9 +196,11 @@ csr_matrix init_csr(csr_matrix csr_matrix)
   cin >> csr_matrix.row;
   cout << "matrix cols: ";
   cin >> csr_matrix.col;
+  cout << endl;
 
   cout << "number of nonzero elements: ";
   cin >> csr_matrix.arr_size;
+  cout << endl;
 
   csr_matrix.value = new double[csr_matrix.arr_size];
   csr_matrix.col_index = new int[csr_matrix.arr_size];
@@ -206,15 +212,21 @@ csr_matrix init_csr(csr_matrix csr_matrix)
     cin >> csr_matrix.value[i];
   }
 
+  cout << endl;
+
   for (int i = 0; i < csr_matrix.arr_size; i++) {
     cout << "cols indexes[" << i << "]: ";
     cin >> csr_matrix.col_index[i];
   }
 
+  cout << endl;
+
   for (int i = 1; i < csr_matrix.row + 1; i++) {
     cout << "rows indexing[" << i << "]: ";
     cin >> csr_matrix.row_indexing[i];
   }
+
+  cout << endl;
 
   return csr_matrix;
 }
@@ -226,9 +238,11 @@ csc_matrix init_csc(csc_matrix csc_matrix)
   cin >> csc_matrix.row;
   cout << "matrix cols: ";
   cin >> csc_matrix.col;
+  cout << endl;
 
   cout << "number of nonzero elements: ";
   cin >> csc_matrix.arr_size;
+  cout << endl;
 
   csc_matrix.value = new double[csc_matrix.arr_size];
   csc_matrix.row_index = new int[csc_matrix.arr_size];
@@ -240,15 +254,21 @@ csc_matrix init_csc(csc_matrix csc_matrix)
     cin >> csc_matrix.value[i];
   }
 
+  cout << endl;
+
   for (int i = 0; i < csc_matrix.arr_size; i++) {
     cout << "rows indexes[" << i << "]: ";
     cin >> csc_matrix.row_index[i];
   }
 
+  cout << endl;
+
   for (int i = 1; i < csc_matrix.col + 1; i++) {
     cout << "cols indexing[" << i << "]: ";
     cin >> csc_matrix.col_indexing[i];
   }
+
+  cout << endl;
 
   return csc_matrix;
 }
@@ -260,9 +280,11 @@ dia_matrix init_dia(dia_matrix dia_matrix)
   cin >> dia_matrix.row;
   cout << "matrix cols: ";
   cin >> dia_matrix.col;
+  cout << endl;
 
   cout << "number of offsets: ";
   cin >> dia_matrix.arr_size;
+  cout << endl;
 
   dia_matrix.value = new double[dia_matrix.arr_size * dia_matrix.col];
   dia_matrix.offsets = new int[dia_matrix.arr_size];
@@ -272,10 +294,14 @@ dia_matrix init_dia(dia_matrix dia_matrix)
     cin >> dia_matrix.offsets[i];
   }
 
+  cout << endl;
+
   for (int i = 0; i < dia_matrix.arr_size * dia_matrix.col; i++) {
     cout << "values[" << i << "]: ";
     cin >> dia_matrix.value[i];
   }
+
+  cout << endl;
 
   return dia_matrix;
 }
@@ -284,7 +310,7 @@ dia_matrix init_dia(dia_matrix dia_matrix)
 csr_matrix simpleM_to_csr(csr_matrix csr_matrix)
 {
   if (csr_sparse_check(csr_matrix) == 1)
-    cout << "matrix is ​​not sparse" << endl;   //Проверка на разреженность
+    cout << "matrix is ​​not sparse" << endl << endl;   //Проверка на разреженность
 
   csr_matrix.row_indexing = new int[csr_matrix.row + 1];
   csr_matrix.row_indexing[0] = 0;
@@ -307,7 +333,7 @@ csr_matrix simpleM_to_csr(csr_matrix csr_matrix)
 csc_matrix simpleM_to_csc(csc_matrix csc_matrix)
 {
   if (csc_sparse_check(csc_matrix) == 1)
-    cout << "matrix is ​​not sparse" << endl;   //Проверка на разреженность
+    cout << "matrix is ​​not sparse" << endl << endl;   //Проверка на разреженность
 
   csc_matrix.col_indexing = new int[csc_matrix.col + 1];
   csc_matrix.col_indexing[0] = 0;
@@ -333,7 +359,7 @@ dia_matrix simpleM_to_dia(dia_matrix dia_matrix)
   int value_counter = 0;
 
   if (dia_sparse_check(dia_matrix) == 1)
-    cout << "matrix is ​​not sparse" << endl;   //Проверка на разреженность
+    cout << "matrix is ​​not sparse" << endl << endl;   //Проверка на разреженность
 
   for (int i = 0; i < dia_matrix.col; i++)
   {
