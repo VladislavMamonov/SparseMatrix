@@ -102,7 +102,7 @@ int main()
 
       dia_matrix = csr_to_dia(csr_matrix, dia_matrix);
       cout << "CONVERTED MATRIX:" << endl;
-      print_csr_matrix(csr_matrix);
+      print_dia_matrix(dia_matrix);
       cout << endl << endl;
     }
 
