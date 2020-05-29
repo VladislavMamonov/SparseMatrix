@@ -173,87 +173,23 @@ dia_matrix csr_to_dia(csr_matrix csr_matrix, dia_matrix dia_matrix)
 
   dia_matrix.offsets = new int[dia_matrix.arr_size];
   dia_matrix.value = new double[dia_matrix.arr_size * dia_matrix.col];
+  dia_matrix.dia_matrix = new double* [dia_matrix.row];
+
+  for (int i = 0; i < dia_matrix.row; i++)
+    dia_matrix.dia_matrix[i] = new double[dia_matrix.col];
 
   index = 0;
 
-  for (int i = 1, j = -1, k = 0; i < csr_matrix.row + 1; i++)
-  {
-    while (index < csr_matrix.row_indexing[i]) {
-      if (csr_matrix.col_index[index] == 0 || i == 1) {
-        if (i == 1) {
-          dia_matrix.offsets[k] = csr_matrix.col_index[index];
-          k++;
-        }
-        else {
-          dia_matrix.offsets[k] = j;
-          k++;
-        }
-      }
+  for (int i = 1; i < csr_matrix.row + 1; i++) {
+    int items_per_row = csr_matrix.row_indexing[i] - csr_matrix.row_indexing[i - 1];
+    for (int k = 0, j = 0; k < items_per_row; k++) {
+      j = csr_matrix.col_index[index];
+      dia_matrix.dia_matrix[i - 1][j] = csr_matrix.value[index];
       index++;
     }
-    if (i != 1) j--;
   }
 
-  index = 0;
-  int k = 0;
-  int tmp = 0;
-
-  for (int i = 0; dia_matrix.offsets[i] >= 0; i++)
-  {
-    if (dia_matrix.offsets[i] != 0) {
-      for (int j = 0; j < dia_matrix.offsets[i]; j++) {
-        dia_matrix.value[index] = 0;
-        index++;
-      }
-    }
-
-    tmp = 0;
-    for (int j = 0; j < csr_matrix.arr_size; j++) {
-      if (csr_matrix.col_index[j] == dia_matrix.offsets[i]) {
-        dia_matrix.value[index] = csr_matrix.value[j];
-        tmp = j;
-        index++;
-        break;
-      }
-    }
-
-    for (int i = tmp + 1; i < csr_matrix.arr_size; i++) {
-      if (csr_matrix.col_index[i] - csr_matrix.col_index[tmp] == 1) {
-        dia_matrix.value[index] = csr_matrix.value[i];
-        index++;
-        tmp = i;
-      }
-    }
-    k = i + 1;
-  }
-
-
-  for (; k < dia_matrix.arr_size; k++)
-  {
-    if (-dia_matrix.offsets[k] > dia_matrix.row - dia_matrix.col) {
-      for (int c = 0; c < -dia_matrix.offsets[k] - (dia_matrix.row - dia_matrix.col); c++) {
-        dia_matrix.value[index] = 0;
-        index++;
-      }
-    }
-
-    for (int i = csr_matrix.row_indexing[-dia_matrix.offsets[k]];
-      i < csr_matrix.arr_size; i++) {
-
-      if (i == csr_matrix.row_indexing[-dia_matrix.offsets[k]]) {
-        dia_matrix.value[index] = csr_matrix.value[i];
-        tmp = i;
-        index++;
-        continue;
-      }
-
-      if (csr_matrix.col_index[i] - csr_matrix.col_index[tmp] == 1) {
-        dia_matrix.value[index] = csr_matrix.value[i];
-        index++;
-        tmp = i;
-      }
-    }
-  }
+  dia_matrix = simpleM_to_dia(dia_matrix);
 
   return dia_matrix;
 }
