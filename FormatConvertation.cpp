@@ -214,7 +214,7 @@ csr_matrix dia_to_csr(dia_matrix dia_matrix, csr_matrix csr_matrix)
   int index = 0;
   int k = 0;
 
-  for (k = 0; dia_matrix.offsets[k] >= 0; k++)
+  for (k = 0; dia_matrix.offsets[k] >= 0 && k < dia_matrix.arr_size; k++)
   {
     int j = dia_matrix.offsets[k];
     for (int i = 0; i < dia_matrix.col - dia_matrix.offsets[k]; i++) {
